@@ -11,7 +11,7 @@ import { InstallModal } from './components/InstallModal.tsx';
 import { OfflineIndicator } from './components/OfflineIndicator.tsx';
 import { Toast, ToastMessage } from './components/Toast.tsx';
 import { Customer, TabDestination } from './types.ts';
-import { Smartphone, Monitor, Database, Download } from 'lucide-react';
+import { Smartphone, Monitor, Database, Download, QrCode } from 'lucide-react';
 
 const AppContent: React.FC = () => {
   const {
@@ -31,6 +31,7 @@ const AppContent: React.FC = () => {
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [deviceFrameMode, setDeviceFrameMode] = useState<boolean>(true);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState<boolean>(false);
+  const [installModalTab, setInstallModalTab] = useState<'android' | 'ios'>('ios');
 
   const showToast = (message: ToastMessage) => {
     setToast(message);
@@ -138,6 +139,19 @@ const AppContent: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => {
+              setInstallModalTab('ios');
+              setIsInstallModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 py-1 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-colors cursor-pointer text-[11px] shadow-xs"
+            title="Scan QR Code to install on iPhone"
+          >
+            <QrCode className="w-3.5 h-3.5" />
+            <span>iPhone QR</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setIsInstallModalOpen(true)}
             className="flex items-center gap-1.5 py-1 px-2.5 rounded-lg bg-sky-600/90 hover:bg-sky-600 text-white font-medium transition-colors cursor-pointer text-[11px] shadow-xs"
             title="Download App for Android and iOS"
@@ -235,6 +249,7 @@ const AppContent: React.FC = () => {
         {/* Install Modal for Android & iOS */}
         <InstallModal
           isOpen={isInstallModalOpen}
+          initialTab={installModalTab}
           onClose={() => setIsInstallModalOpen(false)}
         />
 

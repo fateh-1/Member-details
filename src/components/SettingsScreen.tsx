@@ -153,6 +153,34 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               </span>
             </a>
 
+            <a
+              href="/api/download/android-apk"
+              download="CustomerManager.apk"
+              className="w-full h-10 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl px-3 flex items-center justify-between text-xs font-medium text-white transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Download className="w-4 h-4 text-emerald-400" />
+                <span>Download Android Package (.apk file)</span>
+              </div>
+              <span className="text-[10px] text-emerald-300 font-semibold bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+                Android .APK
+              </span>
+            </a>
+
+            <a
+              href="/api/download/ios-ipa"
+              download="CustomerManager.ipa"
+              className="w-full h-10 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl px-3 flex items-center justify-between text-xs font-medium text-white transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Download className="w-4 h-4 text-sky-400" />
+                <span>Download iOS App Package (.ipa file)</span>
+              </div>
+              <span className="text-[10px] text-sky-300 font-semibold bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+                iOS .IPA
+              </span>
+            </a>
+
             {resetConfirm ? (
               <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl space-y-2">
                 <p className="text-xs text-rose-700 font-medium">

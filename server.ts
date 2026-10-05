@@ -45,6 +45,95 @@ async function startServer() {
     }
   });
 
+  // Download iOS .ipa Package
+  app.get('/api/download/ios-ipa', (_req: Request, res: Response) => {
+    try {
+      const ipaPath = path.resolve(process.cwd(), 'public/downloads/CustomerManager.ipa');
+      if (!fs.existsSync(ipaPath)) {
+        return res.status(404).json({ error: 'CustomerManager.ipa file not found. Please build IPA first.' });
+      }
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', 'attachment; filename="CustomerManager.ipa"');
+      const fileStream = fs.createReadStream(ipaPath);
+      fileStream.pipe(res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Failed to download IPA package' });
+    }
+  });
+
+  // Dynamic Apple OTA manifest.plist
+  app.get('/api/download/ios-manifest', (req: Request, res: Response) => {
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+    const host = req.get('host') || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}`;
+    const ipaUrl = `${baseUrl}/api/download/ios-ipa`;
+    const iconUrl = `${baseUrl}/apple-touch-icon.png`;
+    const fullIconUrl = `${baseUrl}/pwa-512x512.png`;
+
+    const manifestXml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>items</key>
+    <array>
+        <dict>
+            <key>assets</key>
+            <array>
+                <dict>
+                    <key>kind</key>
+                    <string>software-package</string>
+                    <key>url</key>
+                    <string>${ipaUrl}</string>
+                </dict>
+                <dict>
+                    <key>kind</key>
+                    <string>display-image</string>
+                    <key>url</key>
+                    <string>${iconUrl}</string>
+                </dict>
+                <dict>
+                    <key>kind</key>
+                    <string>full-size-image</string>
+                    <key>url</key>
+                    <string>${fullIconUrl}</string>
+                </dict>
+            </array>
+            <key>metadata</key>
+            <dict>
+                <key>bundle-identifier</key>
+                <string>com.customermanager.ios</string>
+                <key>bundle-version</key>
+                <string>1.0.0</string>
+                <key>kind</key>
+                <string>software</string>
+                <key>title</key>
+                <string>Customer Manager</string>
+            </dict>
+        </dict>
+    </array>
+</dict>
+</plist>`;
+
+    res.setHeader('Content-Type', 'application/xml');
+    res.send(manifestXml);
+  });
+
+  // Download Android .apk Package
+  app.get('/api/download/android-apk', (_req: Request, res: Response) => {
+    try {
+      const apkPath = path.resolve(process.cwd(), 'public/downloads/CustomerManager.apk');
+      if (!fs.existsSync(apkPath)) {
+        return res.status(404).json({ error: 'CustomerManager.apk file not found. Please build APK first.' });
+      }
+      res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+      res.setHeader('Content-Disposition', 'attachment; filename="CustomerManager.apk"');
+      const fileStream = fs.createReadStream(apkPath);
+      fileStream.pipe(res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Failed to download APK package' });
+    }
+  });
+
   // Customers API (backed by SQLite)
   app.get('/api/customers', (req: Request, res: Response) => {
     try {
